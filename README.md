@@ -88,7 +88,7 @@ Now let's insert a new user into the database! But this time, we'll use the
 `crypt` function to hash our password.
 
 ```postgresql
-INSERT INTO users(id, username, password) VALUES(3, 'test', crypt('test', gen_salt('bf');
+INSERT INTO users(id, username, password) VALUES(3, 'test', crypt('test', gen_salt('bf')));
 ```
 
 So what is the `crypt` function taking in as parameters? Well first, it will
