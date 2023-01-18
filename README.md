@@ -7,6 +7,9 @@
 
 ## Introduction
 
+Before we continue writing code in our Spring Security project, we should
+address an important topic in security.
+
 Let's talk about passwords.
 
 Passwords are considered sensitive information as it could help a hacker login
@@ -14,10 +17,6 @@ to an account. For example, if the password used for an online bank account got
 out, that would be bad news. When creating applications that handle passwords
 and storing these passwords, we need to be careful with how this information is
 passed around.
-
-So far, we have been storing our passwords in plain text. Look at our database
-where we stored the passwords for our `mary` and `admin` users in plain, visible
-text.
 
 How can we protect our passwords and other sensitive data in a more secure way?
 Let's first define some common words when it comes to securing passwords.
@@ -64,14 +63,47 @@ technique one of the most secure ways to handle passwords!
 
 ## Password Hashing in PostgreSQL
 
-Look at our `security_demo` database that we created and have been using in our
-past lessons in this section. We have been storing the user passwords in plain
-text! Which is a big no-no in the security world!
+Let's create a database that we can connect to in order to simulate a user
+logging into an application! Open up pgAdmin4 and create a new database. Let's
+call it "security_demo".
+
+![create-security-demo-db](https://curriculum-content.s3.amazonaws.com/spring-mod-2/authentication/create-sercurity-demo-db.png)
+
+Once the database has been created, open up the Query Tool and copy in the
+following to create the `users` table and a user with the same credentials we
+saw previously:
+
+```postgresql
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY,
+  username TEXT NOT NULL,
+  password TEXT NOT NULL
+);
+```
+
+For example and demo purposes (you wouldn't do this in a real application in the
+real world), let's insert a test user with a plain text password:
+
+```postgresql
+INSERT INTO users(id, username, password) VALUES(1, 'test', 'test');
+```
+
+Perform a `SELECT * FROM users;` query and look at the results:
+
+![user-password-plaintext](https://curriculum-content.s3.amazonaws.com/spring-mod-2/security/user-password-plaintext.png)
+
+As we can see, the plain text password we inserted is completely visible to us
+as the developers. This means it would also be visible to hackers. If the
+database is hacked, the hacker can see the values in the password column and use
+those credentials for malicious activity such as:
+
+1. Logging into this application with that username and password combination.
+2. Using those credentials for other applications the user could use.
 
 We recently just learned that hashing is the most secure technique to use in
 order to store our passwords. So how can we do that?
-
-Open up pgAdmin4 and a query tool on the `security_demo` database.
 
 We will be using the **pgcrypto extension** to help secure our passwords.
 
@@ -88,7 +120,7 @@ Now let's insert a new user into the database! But this time, we'll use the
 `crypt` function to hash our password.
 
 ```postgresql
-INSERT INTO users(id, username, password) VALUES(3, 'test', crypt('test', gen_salt('bf')));
+INSERT INTO users(id, username, password) VALUES(2, 'secureTest', crypt('test', gen_salt('bf')));
 ```
 
 So what is the `crypt` function taking in as parameters? Well first, it will
@@ -103,6 +135,14 @@ If we run the query and then run a `SELECT * FROM users;`, notice the password
 is no longer in plain text!
 
 ![hashed-password-in-database](https://curriculum-content.s3.amazonaws.com/spring-mod-2/security/hashed-password-in-database.png)
+
+As the developers, we have no idea now what the `secureTest` user's password
+could be if we were just looking at the database. This means, a hacker will
+also not be able to visibly see the password either. If values are hashed well,
+then the hacker can't use that information to log in as the user.
+
+So we might be thinking now, how can us, as the developers, confirm the password
+in the application is valid? We'll cover that in the next lesson.
 
 ## Conclusion
 
