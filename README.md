@@ -128,7 +128,7 @@ take in the password in plain text that we want to put through a hashing
 algorithm. Then we need to specify the salt to use. The salt is used along with
 hashing algorithms and will add a random piece of data prior to hashing. We'll
 pass in `bf`, which will make use of the blowfish algorithm. The blowfish
-algorithm is used with `bcrypt`, which is how we have been handling our
+algorithm is used with `bcrypt`, which is how we will be handling our
 passwords in our Spring application thus far in our `PasswordEncoder` beans.
 
 If we run the query and then run a `SELECT * FROM users;`, notice the password
